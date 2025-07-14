@@ -1,6 +1,8 @@
 # Mutate Execution Specs
 
 `mutate-execution-specs` is a Mutation testing setup guide and toolset designed for the [Ethereum Execution Client Specifications](https://github.com/ethereum/execution-specs).
+
+
 It uses [mutmut](https://github.com/boxed/mutmut) ([v3.3.0](https://pypi.org/project/mutmut/3.3.0/)) to systematically generate small changes (mutations) to the execution-spec and runs the existing test suite to check wether the changes are detected. The mutation tests are configured to run on a per fork-basis.
 
 ## Running Mutation tests for a specific Fork (Frontier)
@@ -93,3 +95,9 @@ A patched version of the tests are required to run the mutation tests. To find t
 ```
 $ mutmut run --max-children 1
 ```
+
+
+## Last-known compatible versions
+
+- [execution-specs #5bab4da](https://github.com/ethereum/execution-specs/commit/5bab4dace60bfd797e4a3cdb9a026446067f657b)
+- [mutmut v3.3.0](https://github.com/boxed/mutmut/releases/tag/3.3.0)
