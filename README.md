@@ -108,6 +108,14 @@ or to run sequentially
 $ mutmut run --max-children 1
 ```
 
+#### Troubleshooting
+
+If running the tests fail with `Failed to run clean test`
+
+(associated issue [#1](https://github.com/souradeep-das/mutate-execution-specs/issues/1))
+
+run the command `mutmut run` again.
+
 
 ## Last-known compatible versions
 
