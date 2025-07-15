@@ -78,6 +78,13 @@ $ patch venv/lib/python3.12/site-packages/mutmut/__main__.py < mutmut.patch
 
 A patched version of `mutmut` is required to run the mutation tests. To find the differences refer [here](./docs/mutmut_diff.md).
 
+9. Patch `tests/` to be able to work with `mutmut`
+
+```
+$ cp ../conftest.patch .
+$ patch -p0 <conftest.patch
+```
+
 9. Patch `tests/frontier` to be able to work with `mutmut`
 
 ```
@@ -92,6 +99,11 @@ A patched version of the tests are required to run the mutation tests. To find t
 
 10. Run mutation tests
 
+```
+$ mutmut run
+```
+
+or to run sequentially
 ```
 $ mutmut run --max-children 1
 ```

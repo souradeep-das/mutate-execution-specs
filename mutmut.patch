@@ -1,11 +1,10 @@
---- venv/lib/python3.12/site-packages/mutmut/__main__.py.orig	2025-07-14 17:19:46
-+++ venv/lib/python3.12/site-packages/mutmut/__main__.py	2025-07-14 12:13:52
-@@ -371,6 +371,12 @@
+--- venv/lib/python3.12/site-packages/mutmut/__main__.py.orig	2025-07-15 12:26:14
++++ venv/lib/python3.12/site-packages/mutmut/__main__.py	2025-07-15 12:28:27
+@@ -371,6 +371,11 @@
      # noinspection PyMethodMayBeStatic
      def execute_pytest(self, params: list[str], **kwargs):
          import pytest
-+        
-+        # Hardcode mutants/src path from your project root
++
 +        mutants_src = os.path.abspath("src")
 +        print(f"Setting PYTHONPATH to: {mutants_src}", file=sys.__stdout__)
 +        os.environ['PYTHONPATH'] = "src"
@@ -13,7 +12,7 @@
          params += ['--rootdir=.']
          if mutmut.config.debug:
              params = ['-vv'] + params
-@@ -397,16 +403,34 @@
+@@ -397,16 +402,34 @@
  
          stats_collector = StatsCollector()
  
@@ -51,22 +50,23 @@
  
      def list_all_tests(self):
          class TestsCollector:
-@@ -415,8 +439,13 @@
+@@ -414,9 +437,14 @@
+                 self.nodeids = {item.nodeid for item in items}
  
          collector = TestsCollector()
- 
++
 +        tests_dir = getattr(mutmut.config, 'tests_dir', None)
 +        pytest_args = ['-x', '-q', '--collect-only']
 +        if tests_dir:
 +            pytest_args.append(tests_dir)
-+
+ 
          with change_cwd('mutants'):
 -            exit_code = int(self.execute_pytest(['-x', '-q', '--collect-only'], plugins=[collector]))
 +            exit_code = int(self.execute_pytest(pytest_args, plugins=[collector]))
              if exit_code != 0:
                  raise CollectTestsFailedException()
  
-@@ -620,6 +649,7 @@
+@@ -620,6 +648,7 @@
      max_stack_depth: int
      debug: bool
      paths_to_mutate: List[Path]
@@ -74,7 +74,7 @@
  
      def should_ignore_for_mutation(self, path):
          if not str(path).endswith('.py'):
-@@ -698,7 +728,8 @@
+@@ -698,7 +727,8 @@
          paths_to_mutate=[
              Path(y)
              for y in s('paths_to_mutate', [])
@@ -84,7 +84,7 @@
      )
  
  
-@@ -935,6 +966,7 @@
+@@ -935,6 +965,7 @@
      os.environ['MUTANT_UNDER_TEST'] = ''
      with CatchOutput(spinner_title='Running clean tests') as output_catcher:
          tests = tests_for_mutant_names(mutant_names)
@@ -92,7 +92,7 @@
  
          clean_test_exit_code = runner.run_tests(mutant_name=None, tests=tests)
          if clean_test_exit_code != 0:
-@@ -975,7 +1007,7 @@
+@@ -975,7 +1006,7 @@
              estimated_time_of_tests = sum(mutmut.duration_by_test[test_name] for test_name in tests)
              m.estimated_time_of_tests_by_mutant[mutant_name] = estimated_time_of_tests
  
@@ -101,7 +101,7 @@
  
          # Now do mutation
          for m, mutant_name, result in mutants:
-@@ -988,12 +1020,13 @@
+@@ -988,12 +1019,13 @@
                  continue
  
              tests = mutmut.tests_by_mangled_function_name.get(mangled_name_from_mutant_name(mutant_name), [])
@@ -119,7 +119,7 @@
  
              pid = os.fork()
              if not pid:
-@@ -1002,16 +1035,16 @@
+@@ -1002,16 +1034,16 @@
                  setproctitle(f'mutmut: {mutant_name}')
  
                  # Run fast tests first
