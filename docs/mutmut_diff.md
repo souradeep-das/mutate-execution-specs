@@ -1,4 +1,4 @@
-1. Add tests_dir to mutmut config to be able to selectively pick test files
+1. Add tests_dir to mutmut config to be able to selectively pick test files. (This will be modified along with https://github.com/boxed/mutmut/pull/408)
 
 2. Set PYTHONPATH to mutmut src files
 
