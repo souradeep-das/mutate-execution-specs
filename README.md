@@ -67,6 +67,10 @@ Here, paths_to_mutate and tests_dir have been setup to work for the `frontier` f
 mkdir -p mutants/src/ethereum && cp src/ethereum/__init__.py src/ethereum/ethash.py src/ethereum/exceptions.py src/ethereum/fork_criteria.py src/ethereum/genesis.py src/ethereum/trace.py mutants/src/ethereum/ && cp -R src/ethereum/assets src/ethereum/crypto src/ethereum/utils mutants/src/ethereum/ && cp -R src/ethereum_optimized src/ethereum_spec_tools mutants/src/
 ```
 
+```
+mkdir -p mutants/ && cp src/ mutants/src/
+```
+
 ### c. Patch
 
 8. Patch Mutmut
