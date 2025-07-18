@@ -1,5 +1,5 @@
---- tests/conftest.py.orig	2025-07-15 12:49:44
-+++ tests/conftest.py	2025-07-15 12:51:45
+--- tests/conftest.py.orig	2025-07-18 15:24:29
++++ tests/conftest.py	2025-07-18 15:22:53
 @@ -165,6 +165,13 @@
  
  
@@ -14,12 +14,17 @@
      if get_xdist_worker_id(session) != "master":
          return
  
-@@ -197,6 +204,8 @@
-     session: Session, exitstatus: int  # noqa: U100
- ) -> None:
-     del exitstatus
-+    if os.environ.get("MUTANT_UNDER_TEST"):
-+        return
+@@ -200,8 +207,9 @@
      if get_xdist_worker_id(session) != "master":
          return
  
+-    lock_file = session.stash[fixture_lock]
+-    session.stash[fixture_lock] = None
++    if fixture_lock in session.stash:
++        lock_file = session.stash[fixture_lock]
++        session.stash[fixture_lock] = None
+ 
+-    assert lock_file is not None
+-    lock_file.release()
++        assert lock_file is not None
++        lock_file.release()

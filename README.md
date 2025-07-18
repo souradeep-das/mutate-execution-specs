@@ -55,17 +55,17 @@ pip install mutmut
 ```
 [tool.mutmut]
 paths_to_mutate = [ "src/ethereum/frontier/" ]
-tests_dir = "tests/frontier/"
+tests_dir = ["tests/frontier/"]
 debug=true
 ```
 
-Here, paths_to_mutate and tests_dir have been setup to work for the `frontier` fork. Setting `debug=true` is optional.
+Here, paths_to_mutate and tests_dir have been setup to work for the `frontier` fork. Setting `debug=true` is optional. For running on a different fork - replace <frontier> with the specific fork name.
 
 7. Copy other files and directories that the mutated code will depend on.
 
 
 ```
-mkdir -p mutants/ && cp src/ mutants/src/
+mkdir -p mutants/src && cp -r src/* mutants/src/
 ```
 
 ### c. Patch
@@ -93,7 +93,7 @@ $ cp ../fork-patch/frontier/update_tests.patch .
 $ patch -p0 < update_tests.patch
 ```
 
-A patched version of the tests are required to run the mutation tests. To find the differences refer [here](./docs/tests_diff.md).
+A patched version of the tests are required to run the mutation tests. To find the differences refer [here](./docs/tests_diff.md). For a different fork - replace <frontier> with the specific fork name.
 
 
 ### d. Run
@@ -108,14 +108,6 @@ or to run sequentially
 ```
 $ mutmut run --max-children 1
 ```
-
-#### Troubleshooting
-
-If running the tests fail with `Failed to run clean test`
-
-(associated issue [#1](https://github.com/souradeep-das/mutate-execution-specs/issues/1))
-
-run the command `mutmut run` again.
 
 
 ## Last-known compatible versions
