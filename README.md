@@ -45,7 +45,7 @@ $ pip install -e '.[test]'
 5. Install mutmut
 
 ```
-pip install mutmut
+pip install mutmut==3.3.0
 ```
 
 ### b. Configure
