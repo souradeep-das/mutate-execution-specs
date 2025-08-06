@@ -1,17 +1,19 @@
---- venv/lib/python3.12/site-packages/mutmut/__main__.py.orig	2025-07-18 15:30:49
-+++ venv/lib/python3.12/site-packages/mutmut/__main__.py	2025-07-18 15:29:19
-@@ -371,6 +371,11 @@
+--- venv/lib/python3.12/site-packages/mutmut/__main__.py.orig	2025-08-06 12:20:26
++++ venv/lib/python3.12/site-packages/mutmut/__main__.py	2025-08-06 11:03:37
+@@ -371,7 +371,12 @@
      # noinspection PyMethodMayBeStatic
      def execute_pytest(self, params: list[str], **kwargs):
          import pytest
+-        params += ['--rootdir=.']
 +
 +        mutants_src = os.path.abspath("src")
 +        print(f"Setting PYTHONPATH to: {mutants_src}", file=sys.__stdout__)
 +        os.environ['PYTHONPATH'] = "src"
 +
-         params += ['--rootdir=.']
++        params += ['-m', 'not angry_mutant', '--rootdir=.']
          if mutmut.config.debug:
              params = ['-vv'] + params
+             print('python -m pytest ', ' '.join(params))
 @@ -397,16 +402,34 @@
  
          stats_collector = StatsCollector()
