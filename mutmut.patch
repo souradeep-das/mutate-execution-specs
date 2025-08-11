@@ -1,6 +1,14 @@
---- venv/lib/python3.12/site-packages/mutmut/__main__.py.orig	2025-08-06 12:20:26
-+++ venv/lib/python3.12/site-packages/mutmut/__main__.py	2025-08-06 11:03:37
-@@ -371,7 +371,12 @@
+--- venv/lib/python3.12/site-packages/mutmut/__main__.py.orig	2025-08-12 01:33:42
++++ venv/lib/python3.12/site-packages/mutmut/__main__.py	2025-08-11 21:35:45
+@@ -80,6 +80,7 @@
+     24: 'timeout',  # SIGXCPU
+     152: 'timeout',  # SIGXCPU
+     255: 'timeout',
++    -9: 'timeout',
+     -11: 'segfault',
+ }
+ 
+@@ -371,7 +372,12 @@
      # noinspection PyMethodMayBeStatic
      def execute_pytest(self, params: list[str], **kwargs):
          import pytest
@@ -14,7 +22,7 @@
          if mutmut.config.debug:
              params = ['-vv'] + params
              print('python -m pytest ', ' '.join(params))
-@@ -397,16 +402,34 @@
+@@ -397,16 +403,34 @@
  
          stats_collector = StatsCollector()
  
@@ -52,23 +60,22 @@
  
      def list_all_tests(self):
          class TestsCollector:
-@@ -414,9 +437,14 @@
-                 self.nodeids = {item.nodeid for item in items}
+@@ -415,8 +439,13 @@
  
          collector = TestsCollector()
-+
+ 
 +        tests_dir = mutmut.config.tests_dir
 +        pytest_args = ['-x', '-q', '--collect-only']
 +        if tests_dir:
 +            pytest_args += tests_dir
- 
++
          with change_cwd('mutants'):
 -            exit_code = int(self.execute_pytest(['-x', '-q', '--collect-only'], plugins=[collector]))
 +            exit_code = int(self.execute_pytest(pytest_args, plugins=[collector]))
              if exit_code != 0:
                  raise CollectTestsFailedException()
  
-@@ -620,6 +648,7 @@
+@@ -620,6 +649,7 @@
      max_stack_depth: int
      debug: bool
      paths_to_mutate: List[Path]
@@ -76,7 +83,7 @@
  
      def should_ignore_for_mutation(self, path):
          if not str(path).endswith('.py'):
-@@ -698,7 +727,8 @@
+@@ -698,7 +728,8 @@
          paths_to_mutate=[
              Path(y)
              for y in s('paths_to_mutate', [])
@@ -86,7 +93,19 @@
      )
  
  
-@@ -935,6 +965,7 @@
+@@ -870,9 +901,9 @@
+             for m, mutant_name, result in mutants:
+                 for pid, start_time in m.start_time_by_pid.items():
+                     run_time = now - start_time
+-                    if run_time.total_seconds() > (m.estimated_time_of_tests_by_mutant[mutant_name] + 1) * 4:
++                    if run_time.total_seconds() > mutmut.stats_time * 2:
+                         try:
+-                            os.kill(pid, signal.SIGXCPU)
++                            os.kill(pid, signal.SIGKILL)
+                         except ProcessLookupError:
+                             pass
+     return inner_timout_checker
+@@ -935,6 +966,7 @@
      os.environ['MUTANT_UNDER_TEST'] = ''
      with CatchOutput(spinner_title='Running clean tests') as output_catcher:
          tests = tests_for_mutant_names(mutant_names)
@@ -94,16 +113,7 @@
  
          clean_test_exit_code = runner.run_tests(mutant_name=None, tests=tests)
          if clean_test_exit_code != 0:
-@@ -975,7 +1006,7 @@
-             estimated_time_of_tests = sum(mutmut.duration_by_test[test_name] for test_name in tests)
-             m.estimated_time_of_tests_by_mutant[mutant_name] = estimated_time_of_tests
- 
--        Thread(target=timeout_checker(mutants), daemon=True).start()
-+        # Thread(target=timeout_checker(mutants), daemon=True).start()
- 
-         # Now do mutation
-         for m, mutant_name, result in mutants:
-@@ -988,12 +1019,13 @@
+@@ -988,12 +1020,13 @@
                  continue
  
              tests = mutmut.tests_by_mangled_function_name.get(mangled_name_from_mutant_name(mutant_name), [])
@@ -121,7 +131,7 @@
  
              pid = os.fork()
              if not pid:
-@@ -1002,16 +1034,16 @@
+@@ -1002,16 +1035,16 @@
                  setproctitle(f'mutmut: {mutant_name}')
  
                  # Run fast tests first
